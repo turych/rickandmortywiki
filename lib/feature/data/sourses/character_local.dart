@@ -5,10 +5,10 @@ import 'package:rickandmortywiki/feature/data/models/character_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class CharacterLocal {
-  /// Throw a [CacheException] for all non 2** codes.
+  /// Throw a [CacheException] if cache is empty.
   Future<void> putIntoStorage(List<CharacterModel> characters);
 
-  /// Throw a [CacheException] for all non 2** codes.
+  /// Throw a [CacheException] if cache is empty.
   Future<List<CharacterModel>> getFromStorage();
 }
 
