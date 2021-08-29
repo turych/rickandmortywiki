@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:injectable/injectable.dart';
 import 'package:rickandmortywiki/core/exception/exception.dart';
 import 'package:rickandmortywiki/feature/data/models/character_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,11 +13,12 @@ abstract class CharacterLocal {
   Future<List<CharacterModel>> getFromStorage();
 }
 
-class CharacterApiSourceImpl implements CharacterLocal {
+@LazySingleton(as: CharacterLocal)
+class CharacterLocalImpl implements CharacterLocal {
   static const CACHE_CHARACTERS_LIST = "CACHE_CHARACTERS_LIST";
   final SharedPreferences localStorage;
 
-  CharacterApiSourceImpl(this.localStorage);
+  CharacterLocalImpl(this.localStorage);
 
   @override
   Future<List<CharacterModel>> getFromStorage() {

@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:logger/logger.dart';
 import 'package:rickandmortywiki/core/exception/exception.dart';
 import 'package:rickandmortywiki/feature/data/models/character_model.dart';
 import 'package:rickandmortywiki/feature/data/sourses/character_rest_client.dart';
 
-abstract class CharacterApi {
+abstract class CharacterRemote {
   /// Throw a [ServerException] for all non 2** codes.
   Future<List<CharacterModel>> getByPage(int page);
 
@@ -12,12 +13,12 @@ abstract class CharacterApi {
   Future<List<CharacterModel>> search(String name);
 }
 
-class CharacterApiImpl implements CharacterApi {
-
+@LazySingleton(as: CharacterRemote)
+class CharacterRemoteImpl implements CharacterRemote {
   final CharacterRestClient restClient;
-  final Logger _logger = Logger();
+  final Logger logger;
 
-  CharacterApiImpl({required this.restClient});
+  CharacterRemoteImpl({required this.restClient, required this.logger});
 
   @override
   Future<List<CharacterModel>> getByPage(int page) async {
@@ -25,7 +26,7 @@ class CharacterApiImpl implements CharacterApi {
       return await restClient.getByPage(page);
     } catch (error) {
       final res = (error as DioError).response;
-      _logger.e("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
+      logger.e("Got error : ${res?.statusCode} -> ${res?.statusMessage}");
       throw ServerException();
     }
   }
@@ -41,7 +42,8 @@ class CharacterApiImpl implements CharacterApi {
   }
 
   void _logError(DioError dioError) {
-    _logger.i("rest url : ${dioError.requestOptions.uri.toString()}");
-    _logger.e("Got error : ${dioError.response?.statusCode} -> ${dioError.response?.statusMessage}");
+    logger.i("rest url : ${dioError.requestOptions.uri.toString()}");
+    logger.e(
+        "Got error : ${dioError.response?.statusCode} -> ${dioError.response?.statusMessage}");
   }
 }
