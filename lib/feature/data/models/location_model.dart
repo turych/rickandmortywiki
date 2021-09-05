@@ -3,7 +3,7 @@ import 'package:rickandmortywiki/feature/domain/entities/location_entity.dart';
 
 part 'location_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(createFactory: true, createToJson: true)
 class LocationModel extends LocationEntity {
 
   LocationModel({

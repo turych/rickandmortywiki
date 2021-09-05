@@ -1,7 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:rickandmortywiki/core/usecases/use_case.dart';
-import 'package:rickandmortywiki/feature/domain/entities/person_entity.dart';
 import 'package:rickandmortywiki/feature/domain/usecases/search_character.dart';
 import 'package:rickandmortywiki/feature/presentation/bloc/map_failure_to_message_mixin.dart';
 import 'package:rickandmortywiki/feature/presentation/bloc/search_bloc/character_search_event.dart';
@@ -9,9 +7,9 @@ import 'package:rickandmortywiki/feature/presentation/bloc/search_bloc/character
 
 @injectable
 class CharacterSearchBloc extends Bloc<SearchEvent, SearchState> with MapFailureToMessageMixin {
-  final UseCase<List<CharacterEntity>, SearchCharacterParams> searchCharacters;
+  final SearchCharacters searchCharacters;
 
-  CharacterSearchBloc({@Named.from(SearchCharacters) required this.searchCharacters})
+  CharacterSearchBloc({required this.searchCharacters})
       : super(CharacterEmptyState());
 
   @override
@@ -24,11 +22,13 @@ class CharacterSearchBloc extends Bloc<SearchEvent, SearchState> with MapFailure
   Stream<SearchState> _mapFetchToState(String searchQuery) async* {
     yield CharacterEmptyState();
 
+    yield CharacterLoadingState();
+
     final failOrCharacters =
         await searchCharacters(SearchCharacterParams(name: searchQuery));
 
-    failOrCharacters.fold(
+    yield failOrCharacters.fold(
         (failure) => CharacterFailureState(message: mapFailureToMessage(failure)),
-        (characters) => CharacterLoadedState(characters: characters));
+        (characters) => CharacterLoadedState(characters: characters.results));
   }
 }

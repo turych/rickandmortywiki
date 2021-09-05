@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:rickandmortywiki/core/usecases/use_case.dart';
-import 'package:rickandmortywiki/feature/domain/entities/person_entity.dart';
+import 'package:rickandmortywiki/feature/domain/entities/character_entity.dart';
 import 'package:rickandmortywiki/feature/domain/usecases/get_all_charchers.dart';
 import 'package:rickandmortywiki/feature/presentation/bloc/map_failure_to_message_mixin.dart';
 
@@ -10,11 +9,11 @@ import 'character_list_state.dart';
 @injectable
 class CharacterListCubit extends Cubit<CharacterListState>
     with MapFailureToMessageMixin {
-  final UseCase<List<CharacterEntity>, PageCharacterParams> getAllCharacters;
+  final GetAllCharacters getAllCharacters;
 
   int page = 1;
 
-  CharacterListCubit({@Named.from(GetAllCharacters) required this.getAllCharacters})
+  CharacterListCubit({required this.getAllCharacters})
       : super(CharacterListEmptyState());
 
   void loadCharacters() async {
@@ -32,11 +31,11 @@ class CharacterListCubit extends Cubit<CharacterListState>
         await getAllCharacters(PageCharacterParams(page: page));
     failOrCharacters.fold(
         (failure) =>
-            CharacterListErrorState(message: mapFailureToMessage(failure)),
-        (newCharecters) {
+            emit(CharacterListErrorState(message: mapFailureToMessage(failure))),
+        (newCharacters) {
       page++;
       final characters = (state as CharacterListLoadingState).oldCharacters;
-      characters.addAll(newCharecters);
+      characters.addAll(newCharacters.results);
       emit(CharacterListLoadedState(characters: characters));
     });
   }

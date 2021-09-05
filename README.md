@@ -4,4 +4,8 @@ The Clean Architecture for Flutter [doc](https://docs.google.com/presentation/d/
 
 Resoures from [Rick and Morty Api](https://rickandmortyapi.com/)
 
-BloC(Cubit) + Retrofit
+libs:
+- bloc(cubit) 
+- retrofit
+- get_it
+- injectable

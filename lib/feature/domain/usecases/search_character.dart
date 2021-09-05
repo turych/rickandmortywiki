@@ -3,19 +3,18 @@ import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rickandmortywiki/core/error/failure.dart';
 import 'package:rickandmortywiki/core/usecases/use_case.dart';
-import 'package:rickandmortywiki/feature/domain/entities/person_entity.dart';
+import 'package:rickandmortywiki/feature/domain/entities/character_paginator_entity.dart';
 import 'package:rickandmortywiki/feature/domain/repositories/character_repository.dart';
 
-@named
-@LazySingleton(as: UseCase)
-class SearchCharacters implements UseCase<List<CharacterEntity>, SearchCharacterParams> {
+@LazySingleton()
+class SearchCharacters implements UseCase<CharacterPaginatorEntity, SearchCharacterParams> {
 
   final CharacterRepository _characterRepository;
 
   SearchCharacters(this._characterRepository);
 
   @override
-  Future<Either<Failure, List<CharacterEntity>>> call(SearchCharacterParams params) {
+  Future<Either<Failure, CharacterPaginatorEntity>> call(SearchCharacterParams params) {
     return _characterRepository.search(params.name);
   }
 

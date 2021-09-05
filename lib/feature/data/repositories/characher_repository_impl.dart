@@ -3,10 +3,9 @@ import 'package:injectable/injectable.dart';
 import 'package:rickandmortywiki/core/error/failure.dart';
 import 'package:rickandmortywiki/core/exception/exception.dart';
 import 'package:rickandmortywiki/core/platform/network_Info.dart';
-import 'package:rickandmortywiki/feature/data/models/character_model.dart';
+import 'package:rickandmortywiki/feature/data/models/character_paginator_model.dart';
 import 'package:rickandmortywiki/feature/data/sourses/character_local.dart';
 import 'package:rickandmortywiki/feature/data/sourses/charaster_remote.dart';
-import 'package:rickandmortywiki/feature/domain/entities/person_entity.dart';
 import 'package:rickandmortywiki/feature/domain/repositories/character_repository.dart';
 
 @LazySingleton(as: CharacterRepository)
@@ -22,21 +21,21 @@ class CharacterRepositoryImpl implements CharacterRepository {
   });
 
   @override
-  Future<Either<Failure, List<CharacterEntity>>> getByPage(int page) async {
+  Future<Either<Failure, CharacterPaginatorModel>> getByPage(int page) async {
     return await _getCharacters(() => characterRemote.getByPage(page));
   }
 
   @override
-  Future<Either<Failure, List<CharacterEntity>>> search(String name) async {
+  Future<Either<Failure, CharacterPaginatorModel>> search(String name) async {
     return await _getCharacters(() => characterRemote.search(name));
   }
 
-  Future<Either<Failure, List<CharacterEntity>>> _getCharacters(
-      Future<List<CharacterModel>> Function() getCharacters) async {
-    if (await networkInfo.isConnected) {
+  Future<Either<Failure, CharacterPaginatorModel>> _getCharacters(
+      Future<CharacterPaginatorModel> Function() getCharacters) async {
+    if (await networkInfo.isConnected()) {
       try {
         final characters = await getCharacters();
-        characterLocal.putIntoStorage(characters);
+        characterLocal.putIntoStorage(characters.results);
         return Right(characters);
       } on ServerException {
         return Left(ServerFailure());
@@ -44,7 +43,7 @@ class CharacterRepositoryImpl implements CharacterRepository {
     } else {
       try {
         final characters = await characterLocal.getFromStorage();
-        return Right(characters);
+        return Right(CharacterPaginatorModel(results: characters));
       } on CacheException {
         return Left(CacheFailure());
       }

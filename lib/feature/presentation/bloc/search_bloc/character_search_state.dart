@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:rickandmortywiki/feature/domain/entities/person_entity.dart';
+import 'package:rickandmortywiki/feature/domain/entities/character_entity.dart';
 
 abstract class SearchState extends Equatable {
   const SearchState();

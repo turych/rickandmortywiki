@@ -1,14 +1,15 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:rickandmortywiki/feature/data/models/location_model.dart';
-import 'package:rickandmortywiki/feature/domain/entities/person_entity.dart';
+import 'package:rickandmortywiki/feature/domain/entities/character_entity.dart';
 
 part 'character_model.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(createFactory: true, createToJson: true)
 class CharacterModel extends CharacterEntity {
 
   final LocationModel origin;
   final LocationModel location;
+  final List<String> episode;
 
   CharacterModel({
     required id,
@@ -20,7 +21,7 @@ class CharacterModel extends CharacterEntity {
     required this.origin,
     required this.location,
     required image,
-    required episode,
+    required this.episode,
     required url,
     required created
   }) : super(
